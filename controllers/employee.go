@@ -66,7 +66,11 @@ func (r *EmployeeController) CreateEmployee(c *fiber.Ctx) error {
 	}
 
 	var Employee models.Employee
-	c.BodyParser(&Employee)
+	//c.BodyParser(&Employee)
+
+	if err := c.BodyParser(&Employee); err != nil {
+		return err
+	}
 
 	err := employeeModel.CreateEmployee(&Employee)
 
@@ -112,7 +116,11 @@ func (r *EmployeeController) UpdateEmployee(c *fiber.Ctx) error {
 	}
 
 	var EmployeeBody models.Employee
-	c.BodyParser(&EmployeeBody)
+	//c.BodyParser(&EmployeeBody)
+
+	if err := c.BodyParser(&EmployeeBody); err != nil {
+		return err
+	}
 
 	err = employeeModel.UpdateEmployee(&Employee, &EmployeeBody)
 

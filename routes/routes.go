@@ -13,6 +13,7 @@ func RegisterRoutes(db *gorm.DB) {
 	//api := app.Group(configs.API_VERSION, middleware.SetContentTypeJSON)
 	api := app.Group(configs.API_VERSION)
 
+	RegisterAuthRoutes(api, db)
 	RegisterUserRoutes(api, db)
 	RegisterEmployeeRoutes(api, db)
 	RegisterCompanyRoutes(api, db)
