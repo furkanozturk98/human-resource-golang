@@ -22,7 +22,7 @@ type TokenRequest struct {
 	Password string `json:"password"`
 }
 
-func (r *AuthController) GenerateToken(c *fiber.Ctx) error {
+func (r *AuthController) Login(c *fiber.Ctx) error {
 	userModel := models.NewUserModel(r.Database)
 
 	var request TokenRequest
@@ -35,7 +35,11 @@ func (r *AuthController) GenerateToken(c *fiber.Ctx) error {
 	user, err := userModel.GetUserByEmail(request.Email)
 
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+		return c.
+			Status(fiber.StatusInternalServerError).
+			JSON(fiber.Map{
+				"error": err.Error(),
+			})
 	}
 
 	credentialError := userModel.CheckPassword(user.Password, request.Password)

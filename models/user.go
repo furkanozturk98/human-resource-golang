@@ -21,18 +21,17 @@ func NewUserModel(database *gorm.DB) *UserModel {
 }
 
 type User struct {
-	Id           int    `gorm:"primaryKey"`
-	FirstName    string `gorm:"not null"`
-	LastName     string `gorm:"not null"`
-	EmailAddress string `gorm:"not null,unique"`
-	Password     string `gorm:"not null"`
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+	Id        int    `gorm:"primaryKey"`
+	FirstName string `gorm:"not null"`
+	LastName  string `gorm:"not null"`
+	Email     string `gorm:"not null,unique"`
+	Password  string `gorm:"not null"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 func (r *UserModel) GetUserList() ([]User, error) {
-
-	users := []User{}
+	var users []User
 
 	response := r.Database.Table("users").Find(&users)
 
@@ -82,7 +81,7 @@ func (r *UserModel) GetUserByEmail(email string) (User, error) {
 
 func (r *UserModel) CreateUser(user *User) error {
 	var userFind User
-	response := r.Database.Where("email_address = ?", user.EmailAddress).First(&userFind)
+	response := r.Database.Where("email = ?", user.Email).First(&userFind)
 
 	if response.Error != nil && errors.Is(response.Error, gorm.ErrRecordNotFound) {
 		hashedPassword, err := r.HashPassword(user.Password)
@@ -110,7 +109,7 @@ func (r *UserModel) CreateUser(user *User) error {
 func (r *UserModel) UpdateUser(user *User, body *User) error {
 	var userFind User
 	response := r.Database.
-		Where("email_address = ?", body.EmailAddress).
+		Where("email = ?", body.Email).
 		Where("id != ?", user.Id).
 		First(&userFind)
 

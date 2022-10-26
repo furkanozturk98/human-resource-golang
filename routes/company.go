@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"github.com/aws/aws-sdk-go/aws/session"
 	"human-resources-backend/controllers"
 	"human-resources-backend/middlewares"
 
@@ -8,14 +9,14 @@ import (
 	"gorm.io/gorm"
 )
 
-func RegisterCompanyRoutes(router fiber.Router, db *gorm.DB) {
-	companyController := controllers.NewCompanyController(db)
+func RegisterCompanyRoutes(router fiber.Router, db *gorm.DB, awsSession *session.Session) {
+	companyController := controllers.NewCompanyController(db, awsSession)
 
-	Company := router.Group("/companies")
+	company := router.Group("/companies")
 
-	Company.Get("/", middlewares.JWTProtected(), companyController.GetCompanyList)
-	Company.Get(":id", middlewares.JWTProtected(), companyController.GetCompanyById)
-	Company.Post("/", middlewares.JWTProtected(), companyController.CreateCompany)
-	Company.Put(":id", middlewares.JWTProtected(), companyController.UpdateCompany)
-	Company.Delete(":id", middlewares.JWTProtected(), companyController.DeleteCompany)
+	company.Get("/", middlewares.JWTProtected(), companyController.GetCompanyList)
+	company.Get(":id", middlewares.JWTProtected(), companyController.GetCompanyById)
+	company.Post("/", middlewares.JWTProtected(), companyController.CreateCompany)
+	company.Put(":id", middlewares.JWTProtected(), companyController.UpdateCompany)
+	company.Delete(":id", middlewares.JWTProtected(), companyController.DeleteCompany)
 }

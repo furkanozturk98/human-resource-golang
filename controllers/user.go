@@ -20,16 +20,23 @@ func NewUserController(database *gorm.DB) UserController {
 }
 
 func (r *UserController) GetUserList(c *fiber.Ctx) error {
-
 	userModel := models.NewUserModel(r.Database)
 
 	users, err := userModel.GetUserList()
 
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+		return c.
+			Status(fiber.StatusInternalServerError).
+			JSON(fiber.Map{
+				"error": err.Error(),
+			})
 	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"data": users})
+	return c.
+		Status(fiber.StatusOK).
+		JSON(fiber.Map{
+			"data": users,
+		})
 }
 
 func (r *UserController) GetUserById(c *fiber.Ctx) error {
@@ -42,7 +49,11 @@ func (r *UserController) GetUserById(c *fiber.Ctx) error {
 	user, err := userModel.GetUserById(userId)
 
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+		return c.
+			Status(fiber.StatusInternalServerError).
+			JSON(fiber.Map{
+				"error": err.Error(),
+			})
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"data": user})
@@ -51,7 +62,6 @@ func (r *UserController) GetUserById(c *fiber.Ctx) error {
 func (r *UserController) CreateUser(c *fiber.Ctx) error {
 	userModel := models.NewUserModel(r.Database)
 
-	//var user models.User
 	userValidator := new(validators.User)
 
 	if err := c.BodyParser(userValidator); err != nil {
@@ -61,22 +71,35 @@ func (r *UserController) CreateUser(c *fiber.Ctx) error {
 	errors := validators.ValidateUser(*userValidator)
 
 	if errors != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(errors)
-
+		return c.
+			Status(fiber.StatusBadRequest).
+			JSON(errors)
 	}
 
 	var user models.User
-	c.BodyParser(&user)
+	if err := c.BodyParser(&user); err != nil {
+		return err
+	}
 
 	err := userModel.CreateUser(&user)
 
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+		return c.
+			Status(fiber.StatusInternalServerError).
+			JSON(fiber.Map{
+				"error": err.Error(),
+			})
 	}
 
 	return c.
 		Status(fiber.StatusOK).
-		JSON(fiber.Map{"data": user})
+		JSON(fiber.Map{
+			"data": fiber.Map{
+				"FirstName": user.FirstName,
+				"LastName":  user.LastName,
+				"Email":     user.Email,
+			},
+		})
 
 }
 
@@ -92,10 +115,11 @@ func (r *UserController) UpdateUser(c *fiber.Ctx) error {
 	if err != nil {
 		return c.
 			Status(fiber.StatusInternalServerError).
-			JSON(fiber.Map{"error": err.Error()})
+			JSON(fiber.Map{
+				"error": err.Error(),
+			})
 	}
 
-	//var user models.User
 	userValidator := new(validators.User)
 
 	if err := c.BodyParser(userValidator); err != nil {
@@ -112,7 +136,10 @@ func (r *UserController) UpdateUser(c *fiber.Ctx) error {
 	}
 
 	var userBody models.User
-	c.BodyParser(&userBody)
+
+	if err := c.BodyParser(&userBody); err != nil {
+		return err
+	}
 
 	err = userModel.UpdateUser(&user, &userBody)
 
@@ -122,7 +149,11 @@ func (r *UserController) UpdateUser(c *fiber.Ctx) error {
 			JSON(fiber.Map{"error": err.Error()})
 	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"data": user})
+	return c.
+		Status(fiber.StatusOK).
+		JSON(fiber.Map{
+			"data": user,
+		})
 
 }
 
@@ -150,5 +181,4 @@ func (r *UserController) DeleteUser(c *fiber.Ctx) error {
 	userModel.DeleteUser(userId)
 
 	return c.Status(fiber.StatusOK).Send(nil)
-
 }

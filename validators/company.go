@@ -1,21 +1,15 @@
 package validators
 
+import "mime/multipart"
+
 type Company struct {
-	Name    string `validate:"required"`
-	Address string `validate:"required"`
-	Phone   string `validate:"required"`
-	Email   string `validate:"required,email"`
-	Logo    string
-	Website string `validate:"required,url"`
+	Name    string               `validate:"required"`
+	Address string               `validate:"required"`
+	Phone   string               `validate:"required"`
+	Email   string               `validate:"required,email"`
+	Logo    multipart.FileHeader `form:"image" validate:"required"`
+	Website string               `validate:"required,url"`
 }
-
-/* type ErrorResponse struct {
-	FailedField string
-	Tag         string
-	Value       string
-}
-
-var validate = validator.New() */
 
 func ValidateCompany(company Company) []*ErrorResponse {
 

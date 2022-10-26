@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"human-resources-backend/configs/messages"
+	"human-resources-backend/validators"
 	"time"
 
 	"gorm.io/gorm"
@@ -65,7 +66,7 @@ func (r *CompanyModel) GetCompanyById(id int) (Company, error) {
 	return Company, nil
 }
 
-func (r *CompanyModel) CreateCompany(company *Company) error {
+func (r *CompanyModel) CreateCompany(data *validators.Company, company *Company, aswKey, imageURL string) error {
 	response := r.Database.Create(&company)
 
 	fmt.Print(response)

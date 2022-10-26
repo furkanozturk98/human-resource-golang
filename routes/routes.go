@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"github.com/aws/aws-sdk-go/aws/session"
 	"human-resources-backend/configs"
 	"log"
 
@@ -8,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func RegisterRoutes(db *gorm.DB) {
+func RegisterRoutes(db *gorm.DB, awsSession *session.Session) {
 	app := fiber.New()
 	//api := app.Group(configs.API_VERSION, middleware.SetContentTypeJSON)
 	api := app.Group(configs.API_VERSION)
@@ -16,7 +17,7 @@ func RegisterRoutes(db *gorm.DB) {
 	RegisterAuthRoutes(api, db)
 	RegisterUserRoutes(api, db)
 	RegisterEmployeeRoutes(api, db)
-	RegisterCompanyRoutes(api, db)
+	RegisterCompanyRoutes(api, db, awsSession)
 
 	if configs.PORT == "" {
 		configs.PORT = "8080"
